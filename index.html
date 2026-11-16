@@ -1,0 +1,433 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta charset="utf-8">
+<title>Hoan Listen Along (Copy)</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: full-bleed night-bridge photo stage, dark glass UI tuned to its own navy/orange/blue palette; one centered "now" card swapping Live/Between; a schedule rail + footer below. Miller Lite branding sized up throughout. */
+:root{
+  --bg:#070a13; --bg2:#0d1428; --panel:rgba(13,20,40,.66); --panel-solid:#0e1631;
+  --line:rgba(255,255,255,.10); --line2:rgba(255,255,255,.16);
+  --fg:#eef2fb; --muted:#9db0cc; --faint:#6f80a0;
+  --gold:#ffc94a; --gold-soft:#ffe6a6; --sky:#4ec7f0; --live:#ff5b60;
+  --display:'Fraunces',Georgia,'Times New Roman',serif;
+  --ui:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--ui);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:#05070e}
+img{display:block}
+a{color:inherit}
+button{font-family:inherit}
+
+/* backgrounds */
+.bg{position:fixed;inset:0;z-index:-3;background:#05070e}
+.bg img{width:100%;height:100%;object-fit:cover;object-position:50% 38%;opacity:.9}
+.bg .wide{display:none}
+@media(min-width:760px){ .bg .tall{display:none} .bg .wide{display:block} }
+.bg::after{content:"";position:absolute;inset:0;background:
+  radial-gradient(120% 80% at 50% -10%, rgba(78,199,240,.10), transparent 55%),
+  linear-gradient(180deg, rgba(5,7,14,.35) 0%, rgba(5,7,14,.15) 32%, rgba(5,7,14,.72) 72%, rgba(5,7,14,.95) 100%)}
+#spark{position:fixed;inset:0;z-index:-2;pointer-events:none}
+
+/* shell */
+.wrap{min-height:100%;display:flex;flex-direction:column;
+  padding-left:max(18px,env(safe-area-inset-left,0px));
+  padding-right:max(18px,env(safe-area-inset-right,0px))}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding-block:14px;margin-bottom:4px}
+.brand-l{display:flex;align-items:center;gap:11px;min-width:0}
+.brand-l img{height:30px;width:auto;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5))}
+.pres{display:flex;align-items:center;gap:9px;white-space:nowrap}
+.pres span{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.pres .chip{background:#fff;border-radius:14px;padding:10px 16px;display:flex;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.pres .chip img{height:38px;width:auto}
+@media(min-width:480px){ .pres .chip img{height:44px} }
+
+.stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:18px;padding-block:22px;text-align:center}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:11px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--gold-soft);font-weight:600}
+.eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold)}
+
+.card{width:100%;max-width:520px;background:var(--panel);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid var(--line);border-radius:22px;padding:30px 24px;
+  box-shadow:0 24px 70px -20px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.06)}
+
+h1.title{font-family:var(--display);font-weight:600;font-optical-sizing:auto;
+  font-size:clamp(40px,12vw,62px);line-height:.98;margin:6px 0 0;text-wrap:balance;
+  letter-spacing:-.01em}
+h1.title em{font-style:italic;color:var(--gold-soft)}
+.lede{color:var(--muted);font-size:15.5px;max-width:40ch;margin:14px auto 0}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:11px;cursor:pointer;
+  border:none;border-radius:999px;font-weight:700;font-size:17px;letter-spacing:.01em;
+  padding:17px 30px;color:#1a1204;
+  background:linear-gradient(180deg,var(--gold-soft),var(--gold));
+  box-shadow:0 12px 32px -6px rgba(255,201,74,.55),inset 0 1px 0 rgba(255,255,255,.6);
+  transition:transform .12s ease, box-shadow .12s ease}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(1px) scale(.99)}
+.btn .tri{font-size:14px}
+.btn.secondary{background:rgba(255,255,255,.06);color:var(--fg);border:1px solid var(--line2);
+  box-shadow:none;font-weight:600;font-size:14px;padding:11px 18px}
+
+.next{margin-top:18px;color:var(--muted);font-size:14px}
+.next b{color:var(--fg);font-variant-numeric:tabular-nums;font-weight:600}
+
+/* live */
+.livepill{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;
+  letter-spacing:.14em;text-transform:uppercase;color:#fff;
+  background:rgba(255,91,96,.16);border:1px solid rgba(255,91,96,.4);
+  padding:6px 13px;border-radius:999px}
+.livepill .blink{width:8px;height:8px;border-radius:50%;background:var(--live);box-shadow:0 0 10px var(--live);animation:blink 1.4s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.show-name{font-family:var(--display);font-weight:600;font-size:clamp(26px,7vw,36px);margin:14px 0 2px}
+.show-sub{color:var(--muted);font-size:14px}
+#viz{width:100%;height:92px;margin:20px 0 8px;display:block}
+.prog{display:flex;align-items:center;gap:12px;font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted)}
+.track{flex:1;height:6px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden}
+.track i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--sky),var(--gold));border-radius:99px;transition:width .25s linear}
+.livebar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:20px}
+.icbtn{cursor:pointer;background:rgba(255,255,255,.06);border:1px solid var(--line2);color:var(--fg);
+  width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:17px;transition:background .12s}
+.icbtn:hover{background:rgba(255,255,255,.12)}
+
+/* between / sponsor */
+.count-big{font-family:var(--display);font-weight:600;font-size:clamp(46px,16vw,80px);line-height:1;
+  font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.count-lbl{color:var(--muted);font-size:13px;letter-spacing:.14em;text-transform:uppercase;margin-top:8px}
+.sponsor{margin-top:22px;border-top:1px solid var(--line);padding-top:22px;min-height:160px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.slide{display:none;flex-direction:column;align-items:center;gap:12px;animation:fade .6s ease}
+.slide.on{display:flex}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.slide .ml{background:#fff;border-radius:16px;padding:16px 26px;box-shadow:0 8px 26px rgba(0,0,0,.45)}
+.slide .ml img{height:56px}
+@media(min-width:480px){ .slide .ml img{height:68px} }
+.slide .big{font-family:var(--display);font-size:24px;font-weight:600}
+.slide .sm{color:var(--muted);font-size:14px;max-width:34ch}
+.tag{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-soft);font-weight:600}
+.dots{display:flex;gap:7px;margin-top:4px}
+.dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.22)}
+.dots i.on{background:var(--gold)}
+
+/* schedule */
+.sched{margin-top:4px;padding-block:18px 10px}
+.sched h3{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);
+  font-weight:600;margin:0 0 12px;text-align:center}
+.chips{display:grid;grid-template-columns:repeat(4,76px);justify-content:center;gap:7px 8px;max-width:100%}
+.chip-t{display:inline-flex;align-items:center;justify-content:center;gap:5px;width:76px;
+  font-variant-numeric:tabular-nums;font-size:11.5px;font-weight:600;
+  color:var(--muted);border:1px solid var(--line);background:rgba(255,255,255,.03);border-radius:999px;
+  padding:6px 4px;white-space:nowrap;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease,opacity .15s ease}
+.chip-t .dot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.45;flex:none}
+.chip-t.past{opacity:.38}
+.chip-t.past .dot{display:none}
+.chip-t.next{color:var(--gold-soft);border-color:rgba(255,201,74,.6);background:rgba(255,201,74,.12);
+  box-shadow:0 0 8px -2px rgba(255,201,74,.55)}
+.chip-t.next .dot{background:var(--gold);box-shadow:0 0 6px var(--gold);opacity:1;animation:blink 1.8s infinite}
+.chip-t.live{color:#fff;border-color:var(--live);background:rgba(255,91,96,.22);
+  box-shadow:0 0 8px -2px rgba(255,91,96,.6)}
+.chip-t.live .dot{background:var(--live);box-shadow:0 0 6px var(--live);opacity:1;animation:blink 1.1s infinite}
+
+footer{padding-block:22px 28px;text-align:center;color:var(--faint);font-size:12.5px;
+  display:flex;flex-direction:column;gap:6px;align-items:center}
+footer .marks{color:var(--muted);display:flex;align-items:center;gap:8px}
+footer .marks img{height:18px;width:auto;background:#fff;border-radius:4px;padding:3px 6px}
+footer a.req{color:var(--sky);text-decoration:none;font-weight:600}
+
+/* preview panel */
+#pv{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:50;
+  display:none;gap:8px;background:rgba(8,11,22,.9);border:1px solid var(--line2);border-radius:14px;padding:9px;
+  box-shadow:0 14px 40px rgba(0,0,0,.6)}
+#pv.on{display:flex;flex-wrap:wrap;justify-content:center;max-width:92vw}
+#pv b{align-self:center;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-soft);padding:0 4px}
+
+/* sound-unlock fallback (only appears if the browser blocks autoplay) */
+#unlock{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:55;
+  display:none;align-items:center;gap:9px;cursor:pointer;background:rgba(8,11,22,.92);border:1px solid var(--line2);
+  color:var(--fg);padding:11px 18px;border-radius:999px;font-size:13.5px;font-weight:600;
+  box-shadow:0 14px 40px rgba(0,0,0,.6);animation:fade .4s ease}
+#unlock.on{display:flex}
+
+@media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
+</style>
+
+<div class="bg">
+  <img class="tall" src="assets/hero_bridge.jpg" alt="The Hoan Bridge lit up at night, orange arch lights reflecting in the water">
+  <img class="wide" src="assets/hero_bridge.jpg" alt="The Hoan Bridge lit up at night, orange arch lights reflecting in the water">
+</div>
+<canvas id="spark"></canvas>
+
+<div class="wrap">
+  <header class="topbar">
+    <div class="brand-l"><img src="assets/lth_logo.png" alt="Light the Hoan"></div>
+    <div class="pres"><span>Presented by</span><div class="chip"><img src="assets/miller_lite.png" alt="Miller Lite"></div></div>
+  </header>
+
+  <main class="stage">
+    <div class="eyebrow"><span class="dot"></span>Holidays at the Hoan · Dec 23–30</div>
+
+    <!-- LIVE -->
+    <section class="card" id="card-live" hidden>
+      <div class="livepill"><span class="blink"></span>Live now</div>
+      <div class="show-name" id="liveName">Tonight's Show</div>
+      <div class="show-sub" id="liveSub">Holidays at the Hoan</div>
+      <canvas id="viz"></canvas>
+      <div class="prog"><span id="elapsed">0:00</span><div class="track"><i id="trackFill"></i></div><span id="remain">-6:00</span></div>
+      <div class="livebar" style="justify-content:center">
+        <button class="icbtn" id="muteBtn" aria-label="Mute">🔊</button>
+      </div>
+    </section>
+
+    <!-- BETWEEN -->
+    <section class="card" id="card-wait" hidden>
+      <div class="count-lbl" id="waitLbl">Next show in</div>
+      <div class="count-big" id="waitCount">00:00</div>
+      <div class="sponsor" id="sponsor">
+        <div class="slide" data-s="0"><div class="ml"><img src="assets/miller_lite.png" alt="Miller Lite"></div><div class="sm">Grab a Miller Lite and keep your sound up — the next show starts soon.</div><div class="tag">Celebrate responsibly · 21+</div></div>
+        <div class="slide" data-s="1"><div class="big">Holidays at the Hoan</div><div class="sm">Synchronized light shows every half hour, 5–10&nbsp;PM nightly through Dec 30.</div></div>
+        <div class="slide" data-s="2"><div class="tag">Up next</div><div class="big" id="waitNextTime">—</div><div class="sm">Keep this page open — it starts automatically.</div></div>
+        <div class="slide" data-s="3"><div class="big">Share the night</div><div class="sm">Tag your view of the bridge <b style="color:var(--gold-soft)">#HolidaysAtTheHoan</b></div></div>
+        <div class="dots" id="dots"></div>
+      </div>
+    </section>
+  </main>
+
+  <section class="sched">
+    <h3>Tonight's shows · 5–10 PM</h3>
+    <div class="chips" id="chips"></div>
+  </section>
+
+  <footer>
+    <div class="marks">Light the Hoan&nbsp; × &nbsp;<img src="assets/miller_lite.png" alt="Miller Lite"></div>
+    <div>Powered by <a class="req" href="https://requisor.io" target="_blank" rel="noopener">Requisor AI</a> · a Holidays at the Hoan trial</div>
+  </footer>
+</div>
+
+<div id="pv">
+  <b>Preview</b>
+  <button class="btn secondary" data-pv="live">Play a show now</button>
+  <button class="btn secondary" data-pv="between">Between shows</button>
+  <button class="btn secondary" data-pv="off">Live clock</button>
+</div>
+
+<div id="unlock">🔊&nbsp; Tap anywhere to enable sound</div>
+
+<script>
+/* ============ CONFIG — edit for the real event ============ */
+const CONFIG = {
+  tz: 'America/Chicago',
+  showLenSec: 360,                       // length of the music mix / show
+  // Show start times (local Chicago). 5:00–10:00 PM, every 30 min.
+  schedule: ['17:00','17:30','18:00','18:30','19:00','19:30','20:00','20:30','21:00','21:30','22:00'],
+  // The mix that plays at each show. For the real event use ONE licensed mix for every slot:
+  //   singleMix: 'audio/holiday-mix.mp3'
+  // These 3 originals rotate so the demo has variety:
+  tracks: ['audio/track1.mp3','audio/track2.mp3','audio/track3.mp3','audio/Justin-Timberlake-SnapYT.App.m4a','audio/Nat-King-Cole-SnapYT.App.m4a'],
+  singleMix: null,                       // set to a path to force one mix for every show
+  // sponsorVideo: 'assets/miller.mp4',  // optional: drop a Miller Lite clip to play between shows
+};
+/* ========================================================= */
+
+const $ = s => document.querySelector(s);
+const pad = n => String(n).padStart(2,'0');
+const toSec = t => { const [h,m]=t.split(':').map(Number); return h*3600+m*60; };
+const starts = CONFIG.schedule.map(toSec);
+const LEN = CONFIG.showLenSec;
+const trackFor = i => CONFIG.singleMix || CONFIG.tracks[i % CONFIG.tracks.length];
+
+function fmtClock(sec){ // secOfDay -> "5:30 PM"
+  let h=Math.floor(sec/3600)%24, m=Math.floor(sec/60)%60;
+  const ap=h>=12?'PM':'AM'; let hh=h%12; if(hh===0)hh=12;
+  return `${hh}:${pad(m)} ${ap}`;
+}
+function fmtDur(s){ s=Math.max(0,Math.round(s)); const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;
+  return h>0?`${h}:${pad(m)}:${pad(x)}`:`${m}:${pad(x)}`; }
+function fmtCount(s){ s=Math.max(0,Math.round(s)); const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;
+  return h>0?`${h}:${pad(m)}:${pad(x)}`:`${pad(m)}:${pad(x)}`; }
+
+/* ---- clock (real Chicago, or virtual for preview) ---- */
+let virtual = null; // {baseSec, baseReal}
+function realNowSec(){
+  const d=new Date();
+  const f=new Intl.DateTimeFormat('en-US',{timeZone:CONFIG.tz,hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const p={}; for(const x of f.formatToParts(d)) if(x.type!=='literal') p[x.type]=x.value;
+  let h=(+p.hour)%24;
+  return h*3600+(+p.minute)*60+(+p.second)+d.getMilliseconds()/1000;
+}
+function nowSec(){ return virtual ? (virtual.baseSec + (Date.now()-virtual.baseReal)/1000) : realNowSec(); }
+
+/* ---- state model ---- */
+function model(){
+  const t = nowSec();
+  for(let i=0;i<starts.length;i++){
+    if(t>=starts[i] && t<starts[i]+LEN){
+      return {phase:'live', idx:i, startSec:starts[i], offset:t-starts[i], showNo:i+1, track:trackFor(i)};
+    }
+  }
+  // find next upcoming today
+  let ni = starts.findIndex(s=>s> t);
+  if(ni>=0){ return {phase:'wait', nextIdx:ni, nextSec:starts[ni], until:starts[ni]-t}; }
+  // after last show -> tomorrow's first
+  return {phase:'wait', nextIdx:0, nextSec:starts[0], until:(86400-t)+starts[0], tomorrow:true};
+}
+
+/* ---- audio + web audio visualizer ---- */
+const au = new Audio(); au.preload='auto'; au.crossOrigin='anonymous'; au.loop=false;
+let actx, analyser, srcNode, gain, dataArr, graphReady=false;
+function ensureGraph(){
+  if(graphReady) return;
+  try{
+    actx = new (window.AudioContext||window.webkitAudioContext)();
+    srcNode = actx.createMediaElementSource(au);
+    analyser = actx.createAnalyser(); analyser.fftSize=128; analyser.smoothingTimeConstant=.82;
+    gain = actx.createGain(); gain.gain.value=1;
+    srcNode.connect(analyser); analyser.connect(gain); gain.connect(actx.destination);
+    dataArr = new Uint8Array(analyser.frequencyBinCount);
+    graphReady=true;
+  }catch(e){ /* visualizer optional */ }
+}
+let muted=false, curSrc='', audioUnlocked=false;
+
+// Best-effort auto-arm on load: no manual "join" tap required. Browsers may still
+// block autoplay with sound until the page gets any interaction — if so, a small
+// "tap anywhere to enable sound" hint appears and the listener below unlocks it.
+async function armAudio(){
+  ensureGraph();
+  try{ if(actx && actx.state==='suspended') await actx.resume(); }catch(e){}
+}
+function showUnlockHint(){ if(!audioUnlocked) $('#unlock').classList.add('on'); }
+function hideUnlockHint(){ $('#unlock').classList.remove('on'); }
+function unlockAudio(){
+  audioUnlocked=true; hideUnlockHint();
+  armAudio();
+  if($('#card-live').hidden) return; // nothing to play right now
+  au.play().catch(()=>{});
+}
+function tryPlay(){
+  const p = au.play();
+  if(p && p.catch){ p.then(()=>{ audioUnlocked=true; hideUnlockHint(); }).catch(()=>{ showUnlockHint(); }); }
+}
+function setMuted(m){ muted=m; if(gain) gain.gain.value=m?0:1; au.muted=m;
+  $('#muteBtn').textContent = m?'🔇':'🔊'; }
+
+/* ---- sponsor rotation ---- */
+let slideI=0, slideT=0;
+function buildDots(){ const d=$('#dots'); d.innerHTML=''; for(let i=0;i<4;i++){const e=document.createElement('i'); d.appendChild(e);} }
+function showSlide(i){ document.querySelectorAll('.slide').forEach(s=>s.classList.toggle('on', +s.dataset.s===i));
+  document.querySelectorAll('#dots i').forEach((d,k)=>d.classList.toggle('on',k===i)); }
+
+/* ---- schedule chips ---- */
+function buildChips(){ const c=$('#chips'); c.innerHTML=''; starts.forEach((s,i)=>{ const e=document.createElement('span');
+  e.className='chip-t'; e.id='chip'+i; e.innerHTML=`<i class="dot"></i>${fmtClock(s)}`; c.appendChild(e); }); }
+function paintChips(mdl){ const t=nowSec(); starts.forEach((s,i)=>{ const e=$('#chip'+i); e.className='chip-t';
+  if(mdl.phase==='live'&&mdl.idx===i) e.classList.add('live');
+  else if(mdl.phase==='wait'&&!mdl.tomorrow&&mdl.nextIdx===i) e.classList.add('next');
+  else if(t>=s+LEN) e.classList.add('past'); }); }
+
+/* ---- render ---- */
+function swap(id){ for(const k of ['live','wait']) $('#card-'+k).hidden = (k!==id); }
+let vizRAF=0;
+function render(force){
+  const mdl=model();
+  paintChips(mdl);
+
+  if(mdl.phase==='live'){
+    swap('live');
+    // audio
+    const want=mdl.track;
+    if(curSrc!==want){ curSrc=want; au.src=want; try{au.load()}catch(e){} }
+    if(au.paused){ tryPlay(); }
+    if(Math.abs(au.currentTime - mdl.offset) > 0.45 && isFinite(au.currentTime)){
+      try{ au.currentTime = Math.min(mdl.offset, LEN-0.1); }catch(e){}
+    }
+    au.muted=muted;
+    $('#liveName').textContent = `Show ${mdl.showNo} · ${fmtClock(mdl.startSec)}`;
+    $('#liveSub').textContent = CONFIG.singleMix ? 'Holidays at the Hoan' : `Holiday Mix ${((mdl.idx)%CONFIG.tracks.length)+1}`;
+    const el=mdl.offset, rem=LEN-mdl.offset;
+    $('#elapsed').textContent=fmtDur(el); $('#remain').textContent='-'+fmtDur(rem);
+    $('#trackFill').style.width=(Math.min(el/LEN,1)*100)+'%';
+    if(!vizRAF){ sizeViz(); drawViz(); }
+  } else {
+    swap('wait');
+    hideUnlockHint();
+    if(!au.paused) au.pause();
+    $('#waitLbl').textContent = mdl.tomorrow ? 'Shows resume' : 'Next show in';
+    $('#waitCount').textContent = mdl.tomorrow ? fmtClock(mdl.nextSec) : fmtCount(mdl.until);
+    $('#waitNextTime').textContent = fmtClock(mdl.nextSec);
+  }
+}
+
+/* ---- visualizer ---- */
+const viz=$('#viz'), vctx=viz.getContext('2d');
+function sizeViz(){ const r=viz.getBoundingClientRect(), dpr=Math.min(2,devicePixelRatio||1);
+  viz.width=r.width*dpr; viz.height=r.height*dpr; vctx.setTransform(dpr,0,0,dpr,0,0); }
+function drawViz(){
+  vizRAF=requestAnimationFrame(drawViz);
+  if($('#card-live').hidden){ cancelAnimationFrame(vizRAF); vizRAF=0; return; }
+  const w=viz.clientWidth,h=viz.clientHeight; vctx.clearRect(0,0,w,h);
+  let bins=24, vals=new Array(bins).fill(0);
+  if(graphReady&&analyser&&!au.paused&&!muted){ analyser.getByteFrequencyData(dataArr);
+    for(let i=0;i<bins;i++){ vals[i]=dataArr[Math.floor(i/bins*dataArr.length*0.7)]/255; } }
+  else { const t=Date.now()/600; for(let i=0;i<bins;i++) vals[i]=0.12+0.07*Math.abs(Math.sin(t+i*0.5)); }
+  const gap=4, bw=(w-(bins-1)*gap)/bins;
+  for(let i=0;i<bins;i++){ const v=Math.max(0.04,vals[i]); const bh=v*h;
+    const x=i*(bw+gap), y=(h-bh)/2;
+    const g=vctx.createLinearGradient(0,y,0,y+bh); g.addColorStop(0,'#ffe6a6'); g.addColorStop(1,'#4ec7f0');
+    vctx.fillStyle=g; const r=Math.min(bw/2,3);
+    vctx.beginPath(); vctx.roundRect(x,y,bw,bh,r); vctx.fill(); }
+}
+
+/* ---- sparkles (ambient rising lights) ---- */
+const spark=$('#spark'), sctx=spark.getContext('2d'); let parts=[];
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+function sizeSpark(){ spark.width=innerWidth; spark.height=innerHeight;
+  parts=Array.from({length: Math.min(60, Math.floor(innerWidth/14))},()=>({
+    x:Math.random()*innerWidth, y:Math.random()*innerHeight,
+    r:Math.random()*1.8+0.4, s:Math.random()*0.3+0.08, a:Math.random()*0.5+0.2 })); }
+function drawSpark(){ sctx.clearRect(0,0,spark.width,spark.height);
+  for(const p of parts){ sctx.beginPath(); sctx.arc(p.x,p.y,p.r,0,7);
+    sctx.fillStyle=`rgba(255,210,120,${p.a})`; sctx.fill();
+    if(!reduce){ p.y-=p.s; p.x+=Math.sin(p.y/40)*0.12; if(p.y<-4){p.y=spark.height+4;p.x=Math.random()*spark.width;} } }
+  if(!reduce) requestAnimationFrame(drawSpark); }
+
+/* ---- preview ---- */
+function setPreview(kind){
+  if(kind==='off'){ virtual=null; curSrc=''; au.pause(); return; }
+  // use first schedule slot as anchor; show length stays real
+  const base = starts[0];
+  if(kind==='live') virtual={baseSec: base+3, baseReal:Date.now()};       // 3s into a show
+  if(kind==='between') virtual={baseSec: base+LEN+8, baseReal:Date.now()}; // just after a show, counting to next
+}
+
+/* ---- boot ---- */
+// TEMP TEST OVERRIDE: makes the 5:00 PM show start 10s after page load, instead of waiting for the real time.
+// Remove this line (and the virtual clock goes back to real Chicago time) once testing is done.
+virtual = {baseSec: starts[0]-10, baseReal: Date.now()};
+function boot(){
+  buildChips(); buildDots(); showSlide(0); sizeViz(); sizeSpark(); drawSpark();
+  $('#muteBtn').addEventListener('click', ()=>setMuted(!muted));
+  $('#unlock').addEventListener('click', unlockAudio);
+  // any interaction with the page unlocks sound if the browser blocked autoplay
+  ['pointerdown','keydown'].forEach(ev=>addEventListener(ev, unlockAudio, {once:true}));
+  armAudio(); // best-effort: works immediately on browsers that allow it, no tap needed
+  // preview via ?preview=1
+  if(new URLSearchParams(location.search).has('preview')){ $('#pv').classList.add('on');
+    document.querySelectorAll('#pv [data-pv]').forEach(b=>b.addEventListener('click',()=>setPreview(b.dataset.pv))); }
+  addEventListener('resize', ()=>{ sizeViz(); sizeSpark(); });
+  // sponsor rotation
+  setInterval(()=>{ if(!$('#card-wait').hidden){ slideI=(slideI+1)%4; showSlide(slideI); } }, 5200);
+  // main loop
+  render(true);
+  setInterval(render, 250);
+}
+boot();
+</script>
+
+</body></html>
